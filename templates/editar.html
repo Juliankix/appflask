@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                Editar Registro #{{ record.id }}
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('editar', id=record.id) }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               value="{{ record.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="value" class="form-label">Valor</label>
+                        <input type="number" step="0.01" class="form-control" id="value" 
+                               name="value" value="{{ record.value }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Categoría</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="A" {% if record.category == 'A' %}selected{% endif %}>Categoría A</option>
+                            <option value="B" {% if record.category == 'B' %}selected{% endif %}>Categoría B</option>
+                            <option value="C" {% if record.category == 'C' %}selected{% endif %}>Categoría C</option>
+                            <option value="D" {% if record.category == 'D' %}selected{% endif %}>Categoría D</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a href="{{ url_for('inicio') }}" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

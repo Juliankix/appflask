@@ -1,0 +1,23 @@
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: #9fcfff;
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.navbar {
+    margin-bottom: 30px;
+    margin-top: -20px;
+}

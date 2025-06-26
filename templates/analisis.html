@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Resultados del Procesamiento</h1>
+        <p class="lead">Operación realizada: {{ operation|replace('_', ' ')|title }}</p>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                Resultados
+            </div>
+            <div class="card-body">
+                {{ table_data|safe }}
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <a href="{{ url_for('inicio') }}" class="btn btn-primary">Volver al Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

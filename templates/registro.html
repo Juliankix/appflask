@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                Agregar Nuevos Datos
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('nuevo') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="value" class="form-label">Valor</label>
+                        <input type="number" step="0.01" class="form-control" id="value" name="value" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Categoría</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="A">Categoría A</option>
+                            <option value="B">Categoría B</option>
+                            <option value="C">Categoría C</option>
+                            <option value="D">Categoría D</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

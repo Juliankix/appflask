@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Dashboard de Datos</h1>
+        <p class="lead">Visualización de datos procesados con Pandas</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    {% for stat_name, stat_value in stats.items() %}
+    <div class="col-md-3">
+        <div class="card text-white 
+            {% if stat_name == 'total_records' %}bg-success
+            {% elif stat_name == 'average_value' %}bg-info
+            {% elif stat_name == 'max_value' %}bg-warning
+            {% else %}bg-danger{% endif %} mb-3">
+            <div class="card-header">
+                {{ stat_name.replace('_', ' ')|title }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    {% if stat_value is number %}
+                        {{ "%.2f"|format(stat_value) if stat_value is float else stat_value }}
+                    {% else %}
+                        {{ stat_value }}
+                    {% endif %}
+                </h5>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Distribución por Categoría
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" width="400" height="300"></canvas>
+                <div id="chartPlaceholder"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Procesamiento de Datos
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('analizar') }}">
+                    <div class="mb-3">
+                        <label for="operation" class="form-label">Operación Pandas:</label>
+                        <select class="form-select" id="operation" name="operation">
+                            <option value="summary">Resumen Estadístico</option>
+                            <option value="groupby">Agrupar por Categoría</option>
+                            <option value="filter">Filtrar Valores > Promedio</option>
+                            <option value="raw_data">Datos Crudos</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Procesar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Últimos Registros</span>
+                <a href="{{ url_for('nuevo') }}" class="btn btn-success btn-sm">Agregar Nuevo</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Valor</th>
+                                <th>Categoría</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td>{{ record.id }}</td>
+                                <td>{{ record.name }}</td>
+                                <td>{{ "%.2f"|format(record.value) }}</td>
+                                <td>{{ record.category }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('editar', id=record.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                        <form method="POST" action="{{ url_for('eliminar', id=record.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm" 
+                                                onclick="return confirm('¿Estás seguro de querer eliminar este registro?')">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('categoryChart');
+        const placeholder = document.getElementById('chartPlaceholder');
+        
+        try {
+            const chartData = JSON.parse('{{ chart_data_json | safe }}');
+            
+            if (chartData.labels && chartData.values && 
+                chartData.labels.length > 0 && chartData.values.length > 0) {
+                
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: 'Registros por Categoría',
+                            data: chartData.values,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                placeholder.innerHTML = '<p class="text-muted">No hay datos disponibles para mostrar el gráfico</p>';
+                ctx.style.display = 'none';
+            }
+        } catch (e) {
+            console.error("Error al cargar el gráfico:", e);
+            placeholder.innerHTML = '<p class="text-danger">Error al cargar los datos del gráfico</p>';
+            ctx.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
